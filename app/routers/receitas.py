@@ -55,7 +55,7 @@ def busca_por_ingrediente(ingredientes: str):
 # Buscar receitas que contenham todos os ingredientes
 @router.get("/receitas/all_ingredientes/{ingredientes}", response_model=list[Receita])
 def busca_por_ingrediente(ingredientes: str):
-    receitas = get_receita_by_ingrediente(Database.get_collection("receitas"), ingredientes.split(",") )
+    receitas = get_receita_by_ingredientes(Database.get_collection("receitas"), ingredientes.split(",") )
     if receitas:
         return receitas
     raise HTTPException(status_code=404, detail="Receita não encontrada")
