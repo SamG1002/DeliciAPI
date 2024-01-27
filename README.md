@@ -24,11 +24,6 @@ venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
-## Importar base de dados json
-```bash
-python importar_json.py
-```
-
 ## Iniciar servidor da API
 ```bash
 venv\Scripts\activate.bat

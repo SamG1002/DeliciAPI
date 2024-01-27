@@ -1,7 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from app.routers import receitas
-from app.utils.database import Database
+from app.infra.database import Database
 
 app = FastAPI(swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"})
 
@@ -10,4 +10,5 @@ app.add_event_handler("startup", lambda: Database.connect("localhost:27017", "af
 app.add_event_handler("shutdown", Database.disconnect)
 
 # Incluir as rotas de receitas
-app.include_router(receitas.router, prefix="/DeliciAPI", tags=["receitas"])
+app.include_router(receitas.router, prefix="/deliciapi", tags=["receitas"])
+

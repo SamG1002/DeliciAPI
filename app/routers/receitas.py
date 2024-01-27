@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pymongo.collection import Collection
-from app.utils.database import Database
-from app.utils.receitas import get_receitas, get_receita_by_id, add_receita, update_receita, delete_receita
+from app.infra.database import Database
+from app.repository.receitas import *
 from app.models.receita import Receita
 from bson import ObjectId
+from typing import List
 
 router = APIRouter()
 
@@ -12,12 +13,12 @@ router = APIRouter()
 def welcome():
     return 'Bem vindo à API de Receitas!'
 
-# Trazer todas as receitas(configurei para trazer apenas 10 por enquanto)
+# Buscar todas as receitas
 @router.get("/receitas/", response_model=list[Receita])
 def listar_receitas():
     return get_receitas(Database.get_collection("receitas"))
 
-# Trazer receita pelo id
+# Buscar receita pelo id
 @router.get("/receitas/{receita_id}", response_model=Receita)
 def obter_receita(receita_id: str):
     receita = get_receita_by_id(Database.get_collection("receitas"), ObjectId(receita_id))
@@ -42,3 +43,19 @@ def atualizar_receita(receita_id: str, receita: Receita):
 def excluir_receita(receita_id: str):
     delete_receita(Database.get_collection("receitas"), ObjectId(receita_id))
     return {"message": "Receita excluída"}
+
+# Buscar receitas que contenham algum dos ingredientes
+@router.get("/receitas/one_ingrediente/{ingredientes}", response_model=list[Receita])
+def busca_por_ingrediente(ingredientes: str):
+    receitas = get_receita_by_ingrediente(Database.get_collection("receitas"), ingredientes.split(",") )
+    if receitas:
+        return receitas
+    raise HTTPException(status_code=404, detail="Receita não encontrada")
+
+# Buscar receitas que contenham todos os ingredientes
+@router.get("/receitas/all_ingredientes/{ingredientes}", response_model=list[Receita])
+def busca_por_ingrediente(ingredientes: str):
+    receitas = get_receita_by_ingrediente(Database.get_collection("receitas"), ingredientes.split(",") )
+    if receitas:
+        return receitas
+    raise HTTPException(status_code=404, detail="Receita não encontrada")
