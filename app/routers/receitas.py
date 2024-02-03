@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from pymongo.collection import Collection
 from app.infra.database import Database
 from app.repository.receitas import *
-from app.models.receita import Receita
+from app.models.receita import Receita, Secao
 from bson import ObjectId
 from typing import List
 
@@ -29,20 +29,26 @@ def obter_receita(receita_id: str):
 # Adicionar uma receita nova
 @router.post("/receitas/", response_model=Receita)
 def adicionar_receita(receita: Receita):
-    add_receita(Database.get_collection("receitas"), receita)
-    return receita
+    response = add_receita(Database.get_collection("receitas"), receita)
+    if response:
+        return {"message": "Receita adicionada com sucesso", "status_code": status.HTTP_200_OK}
+
 
 # Editar uma receita existente pelo id
 @router.put("/receitas/{receita_id}", response_model=Receita)
 def atualizar_receita(receita_id: str, receita: Receita):
-    update_receita(Database.get_collection("receitas"), ObjectId(receita_id), receita)
-    return receita
+    response = update_receita(Database.get_collection("receitas"), ObjectId(receita_id), receita)
+    if response:
+        return {"message": "Receita atualizada com sucesso", "status_code": status.HTTP_200_OK}
+
 
 # Apagar uma receita pelo id
 @router.delete("/receitas/{receita_id}", response_model=dict)
 def excluir_receita(receita_id: str):
-    delete_receita(Database.get_collection("receitas"), ObjectId(receita_id))
-    return {"message": "Receita excluída"}
+    response = delete_receita(Database.get_collection("receitas"), ObjectId(receita_id))
+    if response:
+        return {"message": "Receita excluida com sucesso", "status_code": status.HTTP_200_OK}
+
 
 # Buscar receitas que contenham algum dos ingredientes
 @router.get("/receitas/one_ingrediente/{ingredientes}", response_model=list[Receita])
@@ -58,4 +64,12 @@ def busca_por_ingrediente(ingredientes: str):
     receitas = get_receita_by_ingredientes(Database.get_collection("receitas"), ingredientes.split(",") )
     if receitas:
         return receitas
+    raise HTTPException(status_code=404, detail="Receita não encontrada")
+
+# Adicionar secao em uma receita (como comentario, avaliacao, dificuldade, etc)
+@router.put("/receitas/secao/{receita_id}")
+def adicionar_secao(receita_id: str, secao: Secao):
+    receita = add_secao(Database.get_collection("receitas"), ObjectId(receita_id), secao)
+    if receita:
+        return {"message": "Seção adicionada", "status_code": status.HTTP_200_OK}
     raise HTTPException(status_code=404, detail="Receita não encontrada")
