@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, status, Query
+from fastapi_pagination import Page, add_pagination, paginate
 from pymongo.collection import Collection
 from app.infra.database import Database
 from app.repository.receitas import *
@@ -8,15 +9,19 @@ from typing import List
 
 router = APIRouter()
 
+# Deixando como Default 
+Page = Page.with_custom_options(
+    size=Query(100, ge=1, le=500),
+)
 
 @router.get("/")
 def welcome():
-    return 'Bem vindo à API de Receitas!'
+    return 'Bem vindo ao DeliciAPI!'
 
 # Buscar todas as receitas
-@router.get("/receitas/", response_model=list[Receita])
+@router.get("/receitas/", response_model=Page[Receita])
 def listar_receitas():
-    return get_receitas(Database.get_collection("receitas"))
+    return paginate(get_receitas(Database.get_collection("receitas")))
 
 # Buscar receita pelo id
 @router.get("/receitas/{receita_id}", response_model=Receita)
@@ -51,19 +56,19 @@ def excluir_receita(receita_id: str):
 
 
 # Buscar receitas que contenham algum dos ingredientes
-@router.get("/receitas/one_ingrediente/{ingredientes}", response_model=list[Receita])
+@router.get("/receitas/one_ingrediente/{ingredientes}", response_model=Page[Receita])
 def busca_por_ingrediente(ingredientes: str):
     receitas = get_receita_by_ingrediente(Database.get_collection("receitas"), ingredientes.split(",") )
     if receitas:
-        return receitas
+        return paginate(receitas)
     raise HTTPException(status_code=404, detail="Receita não encontrada")
 
 # Buscar receitas que contenham todos os ingredientes
-@router.get("/receitas/all_ingredientes/{ingredientes}", response_model=list[Receita])
+@router.get("/receitas/all_ingredientes/{ingredientes}", response_model=Page[Receita])
 def busca_por_ingrediente(ingredientes: str):
     receitas = get_receita_by_ingredientes(Database.get_collection("receitas"), ingredientes.split(",") )
     if receitas:
-        return receitas
+        return paginate(receitas)
     raise HTTPException(status_code=404, detail="Receita não encontrada")
 
 # Adicionar secao em uma receita (como comentario, avaliacao, dificuldade, etc)
@@ -73,3 +78,6 @@ def adicionar_secao(receita_id: str, secao: Secao):
     if receita:
         return {"message": "Seção adicionada", "status_code": status.HTTP_200_OK}
     raise HTTPException(status_code=404, detail="Receita não encontrada")
+
+# Criando a Paginação no retorno da API
+add_pagination(router)
