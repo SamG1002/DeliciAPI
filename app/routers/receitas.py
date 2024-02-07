@@ -14,7 +14,8 @@ Page = Page.with_custom_options(
     size=Query(100, ge=1, le=500),
 )
 
-@router.get("/")
+# Oculto esta rota no Swagger
+@router.get("/", include_in_schema=False)
 async def welcome():
     return 'Bem vindo ao DeliciAPI!'
 
@@ -65,7 +66,7 @@ async def busca_por_ingrediente(ingredientes: str):
 
 # Buscar receitas que contenham todos os ingredientes
 @router.get("/receitas/all_ingredientes/{ingredientes}", response_model=Page[Receita])
-async def busca_por_ingrediente(ingredientes: str):
+async def busca_todos_ingredientes(ingredientes: str):
     receitas = await get_receita_by_ingredientes(Database.get_collection("receitas"), ingredientes.split(",") )
     if receitas:
         return paginate(receitas)
