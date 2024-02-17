@@ -10,10 +10,10 @@ async def get_receita_by_id(collection: Collection, receita_id: str):
     return collection.find_one({"_id": receita_id })
 
 async def add_receita(collection: Collection, receita: Receita):
-    return collection.insert_one(receita.dict())
+    return collection.insert_one(receita.model_dump())
 
 async def update_receita(collection: Collection, receita_id: str, receita: Receita):
-    return collection.update_one({"_id": receita_id}, {"$set": receita.dict()})
+    return collection.update_one({"_id": receita_id}, {"$set": receita.model_dump()})
 
 async def delete_receita(collection: Collection, receita_id: str):
     return collection.delete_one({"_id": receita_id})
@@ -45,7 +45,7 @@ async def add_secao(collection: Collection, receita_id: str, secao: Secao):
             update_query = {"$push": {"secao.$.conteudo": {"$each": secao.conteudo}}}
         else:
             filtro = {"_id": receita_id}
-            update_query = {"$push": {"secao": secao.dict()}}
+            update_query = {"$push": {"secao": secao.model_dump()}}
 
         collection.find_one_and_update(filtro, update_query, upsert=True)
     

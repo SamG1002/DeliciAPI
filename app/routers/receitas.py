@@ -6,7 +6,8 @@ from app.repository.receitas import *
 from app.models.receita import Receita, Secao
 from bson import ObjectId
 from typing import List
-
+from fastapi_pagination.utils import disable_installed_extensions_check
+disable_installed_extensions_check()
 router = APIRouter()
 
 # Deixando como Default 
@@ -36,8 +37,9 @@ async def obter_receita(receita_id: str):
 @router.post("/receitas/")
 async def adicionar_receita(receita: Receita):
     response = await add_receita(Database.get_collection("receitas"), receita)
+    print(response.inserted_id)
     if response:
-        return {"message": "Receita adicionada com sucesso", "status_code": status.HTTP_200_OK}
+        return {"message": "Receita adicionada com sucesso", "status_code": status.HTTP_200_OK, "ObjectId": str(response.inserted_id)}
 
 
 # Editar uma receita existente pelo id
