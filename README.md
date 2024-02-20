@@ -27,13 +27,20 @@ pip install -r requirements.txt
 ## Iniciar servidor da API
 ```bash
 venv\Scripts\activate.bat
-uvicorn api:app --reload
+uvicorn main:app --reload
 ```
 
-# :link: Links para utilizar
+# :test_tube: Testar o projeto:
+
+### Links e EndPoints
 * [Api](http://localhost:8000/)
 * [Doc](http://localhost:8000/docs#/)
-
+![image](https://github.com/SamG1002/DeliciAPI/assets/56116583/8eafad80-48a1-4e81-a541-ffd23d151f7a)
+  
+### Automação dos testes
+```bash
+pytest
+```
 
 # 🧑🏿‍💻 Desenvolvedor
 
