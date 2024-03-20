@@ -13,20 +13,25 @@ Utilizei como base de dados o MongoDB utilizando dados do repositório [Afrodite
 git clone https://github.com/SamG1002/DeliciAPI.git
 ```
 
-**Certifique-se de ter o Python (com pip) instalado.**
+**Certifique-se de ter o Python (com pip) e MongoDB instalado.**
 
 :warning: [Python](https://www.python.org/downloads/)
+:warning: [MongoDB](https://www.mongodb.com/docs/manual/administration/install-community/)
 
 ### Configurar ambiente virtual
 ```bash
 python -m venv venv
-venv\Scripts\activate.bat
-pip install -r requirements.txt
+venv\Scripts\activate
+python.exe -m pip install -r requirements.txt
+```
+
+## Importar Banco de Dados
+```bash
+python.exe importa_db.py
 ```
 
 ## Iniciar servidor da API
 ```bash
-venv\Scripts\activate.bat
 uvicorn main:app --reload
 ```
 
