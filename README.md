@@ -44,7 +44,7 @@ uvicorn main:app --reload
   
 ### Automação dos testes
 ```bash
-pytest
+python -m pytest
 ```
 
 # 🧑🏿‍💻 Desenvolvedor
